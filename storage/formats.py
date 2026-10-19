@@ -8,7 +8,7 @@ print("rows, columns:", df.shape)
 
 df.to_csv("data/trips.csv", index=False)
 df.to_json("data/trips.json", orient="records", lines=True, date_format="iso")
-df.to_parquet("data/trips.parquet")
+df.to_parquet("data/trips.parquet", compression="zstd")
 
 for name in ["trips.csv", "trips.json", "trips.parquet"]:
     size_mb = os.path.getsize(f"data/{name}") / 1_000_000
