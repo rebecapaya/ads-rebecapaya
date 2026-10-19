@@ -158,9 +158,16 @@ CSV. Read it: what is pandas complaining about?
 Questions:
 
 - Why is the JSON file 20 times bigger than the Parquet file?
+
+  JSON repeats every column name in every row (about 3 million times) and stores everything as text. Parquet stores the schema once, uses binary types and compresses each column.
+
 - Why is reading 2 columns from the CSV still so much slower than from Parquet?
+
+  CSV is row-oriented: pandas must read and parse every row, with all 19 columns, to extract 2 of them. Parquet is columnar, so it reads only those 2 columns, already typed and compressed (1.68 s vs 0.03 s in my run).
+
 - Change `df.to_parquet("data/trips.parquet")` to use `compression="zstd"`. What is the size now?
 
+  49.3 MB with zstd, against 61 MB with the default Snappy.
 Commit and push:
 
 ```bash
