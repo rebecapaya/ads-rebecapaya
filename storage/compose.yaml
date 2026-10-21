@@ -1,0 +1,14 @@
+services:
+  storage:
+    image: rustfs/rustfs:1.0.1
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      RUSTFS_ACCESS_KEY: student
+      RUSTFS_SECRET_KEY: student-secret
+    volumes:
+      - s3data:/data
+
+volumes:
+  s3data:
