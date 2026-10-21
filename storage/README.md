@@ -157,6 +157,7 @@ CSV. Read it: what is pandas complaining about?
 
 Questions:
 
+
 - Why is the JSON file 20 times bigger than the Parquet file?
 
   JSON repeats every column name in every row (about 3 million times) and stores everything as text. Parquet stores the schema once, uses binary types and compresses each column.
@@ -343,8 +344,13 @@ milliseconds, and reading less data matters even more.
 Questions:
 
 - Compare `read_remote.py` with `formats.py`. What changed in the pandas calls?
+In read_remote.py, the pandas functions read the data directly from S3-compatible object storage instead of reading local files. A PyArrow S3 filesystem is passed through the filesystem=s3 argument, allowing pandas to access remote objects. The Parquet calls remain almost identical, while the CSV file is read through an input stream opened from the bucket.
+
 - Run `docker compose down` and `docker compose up -d`. Is the data still in the console? And after `docker compose down -v`?
+After running docker compose down followed by docker compose up -d, the data was still available in the RustFS console because the Docker volume was preserved. However, after running docker compose down -v, the volume was deleted and all stored data disappeared. A new empty volume was created when the services were started again.
+
 - Unset `S3_ENDPOINT` (`unset S3_ENDPOINT`) and run `read_remote.py`. Read the error. Who are you talking to now?
+After removing S3_ENDPOINT, the application no longer knew that it should connect to the local RustFS server. Instead, PyArrow attempted to use the default AWS S3 endpoint. This resulted in an ACCESS_DENIED error because the credentials were not valid for Amazon S3. Therefore, the application was trying to talk to Amazon S3 instead of the local S3-compatible storage service.
 
 Set `S3_ENDPOINT` again, run `python upload.py` if you deleted the data, then
 commit and push:
